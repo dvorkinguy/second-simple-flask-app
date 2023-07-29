@@ -2,7 +2,7 @@ def img
 
 pipeline {
     environment {
-        registry = "dvorkinguy/flask-dashboard"
+        registry = "dvorkinguy/second-simple-flask-app"
         registryCredential = 'docker-hub-credentials'
         dockerImage = ''
     }
@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage('checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/dvorkinguy/flask-dashboard.git'
+                git branch: 'main', url: 'https://github.com/dvorkinguy/second-simple-flask-app.git'
             }
         }
 
@@ -37,9 +37,9 @@ pipeline {
 
         stage('Test - Run Docker Container on Jenkins node') {
             steps {
-                sh label: '', script: "docker stop flask-dashboard-ci || true"
-                sh label: '', script: "docker rm flask-dashboard-ci || true"
-                sh label: '', script: "docker run -d --name flask-dashboard-ci -p 5000:5000 ${img}"
+                sh label: '', script: "docker stop second-simple-flask-app || true"
+                sh label: '', script: "docker rm second-simple-flask-app || true"
+                sh label: '', script: "docker run -d --name second-simple-flask-app -p 5000:5000 ${img}"
             }
         }
 
