@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Thank You!</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <br><br>
+  <div class="banner">
+    <h1>Dear {{ full_name }},<br>
+      Thank You!</h1>
+    </div>
+
+  <div class="content">
+    <h2><span style="color: green;">We appreciate your submission and will be in touch with you shortly.</span></h2>
+<br><br>
+    <p>Full Name: {{ full_name }}</p>
+    <p>Mobile Phone: {{ phone }}</p>
+    <p>Email: {{ email }}</p>
+  </div>
+<br><br>
+  <footer>
+    <a href="/" class="/">&copy; 2023 DevOpsChallenges.com</a>
+  </footer>
+</body>
+</html>
