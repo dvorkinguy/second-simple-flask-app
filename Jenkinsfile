@@ -39,7 +39,7 @@ pipeline {
             steps {
                 sh label: '', script: "docker stop second-simple-flask-app || true"
                 sh label: '', script: "docker rm second-simple-flask-app || true"
-                sh label: '', script: "docker run -d --name second-simple-flask-app -p 5000:5000 ${img}"
+                sh label: '', script: "docker run -d --name second-simple-flask-app -p 5001:5000 ${img}"
             }
         }
 
