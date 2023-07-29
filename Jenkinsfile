@@ -1,5 +1,3 @@
-def img
-
 pipeline {
     environment {
         registry = "dvorkinguy/second-simple-flask-app"
@@ -73,6 +71,64 @@ pipeline {
                         dockerImage.push()
                     }
                 }
+            }
+        }
+    }
+    post {
+        always {
+            script {
+                currentBuild.result = currentBuild.result ?: 'SUCCESS'
+                slackSend(
+                    channel: '#jenkins-second-simple-flask-app',  // Slack channel name
+                    color: currentBuild.result == 'SUCCESS' ? 'good' : 'danger',
+                    message: "Pipeline '${env.JOB_NAME}' (${env.BUILD_NUMBER}) status: ${currentBuild.result}",
+                    teamDomain: 'not-just-devops',  // Slack workspace domain
+                    tokenCredentialId: 'slack-jenkins-second-simple-flask-app'  // Slack credential name
+                )
+            }
+        }
+        success {
+            script {
+                slackSend(
+                    channel: '#jenkins-second-simple-flask-app',  // Slack channel name
+                    color: 'good',
+                    message: "Pipeline '${env.JOB_NAME}' (${env.BUILD_NUMBER}) was successful! :tada:",
+                    teamDomain: 'not-just-devops',  // Slack workspace domain
+                    tokenCredentialId: 'slack-jenkins-second-simple-flask-app'  // Slack credential name
+                )
+            }
+        }
+        unstable {
+            script {
+                slackSend(
+                    channel: '#jenkins-second-simple-flask-app',  // Slack channel name
+                    color: 'warning',
+                    message: "Pipeline '${env.JOB_NAME}' (${env.BUILD_NUMBER}) is unstable.",
+                    teamDomain: 'not-just-devops',  // Slack workspace domain
+                    tokenCredentialId: 'slack-jenkins-second-simple-flask-app'  // Slack credential name
+                )
+            }
+        }
+        failure {
+            script {
+                slackSend(
+                    channel: '#jenkins-second-simple-flask-app',  // Slack channel name
+                    color: 'danger',
+                    message: "Pipeline '${env.JOB_NAME}' (${env.BUILD_NUMBER}) failed. :x:",
+                    teamDomain: 'not-just-devops',  // Slack workspace domain
+                    tokenCredentialId: 'slack-jenkins-second-simple-flask-app'  // Slack credential name
+                )
+            }
+        }
+        fixed {
+            script {
+                slackSend(
+                    channel: '#jenkins-second-simple-flask-app',  // Slack channel name
+                    color: 'good',
+                    message: "Pipeline '${env.JOB_NAME}' (${env.BUILD_NUMBER}) is back to normal.",
+                    teamDomain: 'not-just-devops',  // Slack workspace domain
+                    tokenCredentialId: 'slack-jenkins-second-simple-flask-app'  // Slack credential name
+                )
             }
         }
     }
