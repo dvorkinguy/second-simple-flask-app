@@ -1,3 +1,5 @@
+def img
+
 pipeline {
     environment {
         registry = "dvorkinguy/second-simple-flask-app"
@@ -39,8 +41,54 @@ pipeline {
             }
         }
 
-        // Rest of your stages...
+        stage('Test - Run Docker Container on Jenkins node') {
+            steps {
+                slackSend(channel: '#jenkins-second-simple-flask-app', message: "Stage 'Test - Run Docker Container on Jenkins node' started", teamDomain: 'not-just-devops', tokenCredentialId: 'slack-jenkins-second-simple-flask-app')
+                sh label: '', script: "docker stop second-simple-flask-app || true"
+                sh label: '', script: "docker rm second-simple-flask-app || true"
+                sh label: '', script: "docker run -d --name second-simple-flask-app -p 5000:5000 ${img}"
+                slackSend(channel: '#jenkins-second-simple-flask-app', message: "Stage 'Test - Run Docker Container on Jenkins node' completed", teamDomain: 'not-just-devops', tokenCredentialId: 'slack-jenkins-second-simple-flask-app')
+            }
+        }
 
+        stage('Push To DockerHub') {
+            steps {
+                slackSend(channel: '#jenkins-second-simple-flask-app', message: "Stage 'Push To DockerHub' started", teamDomain: 'not-just-devops', tokenCredentialId: 'slack-jenkins-second-simple-flask-app')
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', registryCredential) {
+                        // Push the image tagged with the build number
+                        dockerImage.push()
+                    }
+                }
+                slackSend(channel: '#jenkins-second-simple-flask-app', message: "Stage 'Push To DockerHub' completed", teamDomain: 'not-just-devops', tokenCredentialId: 'slack-jenkins-second-simple-flask-app')
+            }
+        }
+
+        stage('Build Latest Image') {
+            steps {
+                slackSend(channel: '#jenkins-second-simple-flask-app', message: "Stage 'Build Latest Image' started", teamDomain: 'not-just-devops', tokenCredentialId: 'slack-jenkins-second-simple-flask-app')
+                script {
+                    // Tag the image with 'latest'
+                    img = registry + ":latest"
+                    println ("${img}")
+                    dockerImage = docker.build("${img}")
+                }
+                slackSend(channel: '#jenkins-second-simple-flask-app', message: "Stage 'Build Latest Image' completed", teamDomain: 'not-just-devops', tokenCredentialId: 'slack-jenkins-second-simple-flask-app')
+            }
+        }
+
+        stage('Push Latest To DockerHub') {
+            steps {
+                slackSend(channel: '#jenkins-second-simple-flask-app', message: "Stage 'Push Latest To DockerHub' started", teamDomain: 'not-just-devops', tokenCredentialId: 'slack-jenkins-second-simple-flask-app')
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', registryCredential) {
+                        // Push the image tagged as 'latest'
+                        dockerImage.push()
+                    }
+                }
+                slackSend(channel: '#jenkins-second-simple-flask-app', message: "Stage 'Push Latest To DockerHub' completed", teamDomain: 'not-just-devops', tokenCredentialId: 'slack-jenkins-second-simple-flask-app')
+            }
+        }
     }
     post {
         always {
